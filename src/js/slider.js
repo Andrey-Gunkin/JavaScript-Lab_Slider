@@ -1,70 +1,55 @@
-let images = [{
-    link: 'src/images/slider/project_hole.png',
-    title: 'hole'
-}, {
-    link: 'src/images/slider/project_kitchen.png',
-    title: 'kitchen'
-}, {
-    link: 'src/images/slider/project_bathroom.png',
-    title: 'bathroom'
-}, {
-    link: 'src/images/slider/project_bedroom.png',
-    title: 'bedroom'
-}];
+let project = document.querySelectorAll('.projects-content');
+let projectItem = document.querySelectorAll('.projects-item');
+let projectDot = document.querySelectorAll('.projects-pagination__circle');
+let leftArrow = document.querySelector('.projects-pagination__left');
+let rightArrow = document.querySelector('.projects-pagination__right');
 
-function initSlider() {
+sliderButtons('.projects-item', '.active-window');
+sliderButtons('.projects-pagination__circle', '.active-dot');
 
-    if (!images || !images.length) return;
+function sliderButtons(blockClass, activeClass) {
+    let projectItem = document.querySelectorAll(blockClass);
+    projectItem.forEach((item, index) => item.addEventListener('click', function () {
 
-    let sliderImages = document.querySelector('.project_photos-slider');
-    let sliderArrows = document.querySelector('.project_slider-arrows');
-    let sliderDots = document.querySelector('.project_slider-dots');
-
-    initImages();
-    initArrows();
-    initDots();
-
-    function initImages() {
-        images.forEach((image, index) => {
-            let imageDiv = `<img class='image n${index} ${index === 0 ? 'active' : ''}'  src = '${images[index].link}' data-index='${index}' alt = 'Admiral, ${images[index].title}'></img>`;
-            sliderImages.innerHTML += imageDiv;
-        })
-    }
-
-    function initArrows() {
-        sliderArrows.querySelectorAll('.project_slider-arrow').forEach(arrow => {
-            arrow.addEventListener('click', function() {
-                let curNumber = +sliderImages.querySelector('.active').dataset.index;
-                let nextNum;
-                if (arrow.classList.contains('left')) {
-                    nextNum = curNumber === 0 ? images.length - 1 : curNumber - 1;
-                } else {
-                    nextNum = curNumber === images.length - 1 ? 0 : curNumber + 1;
-                }
-                moveSlider(nextNum);
-            });
-        });
-    }
-
-    function initDots() {
-        images.forEach((image, index) => {
-            let dot = `<div class='slider__dots-item n${index} ${index === 0 ? 'active' : ''}' data-index ='${index}'></div>`;
-            sliderDots.innerHTML += dot;
-        });
-        sliderDots.querySelectorAll('.slider__dots-item').forEach(dot => {
-            dot.addEventListener('click', function() {
-                moveSlider(this.dataset.index);
-            })
-        })
-    }
-
-    function moveSlider(num) {
-        sliderImages.querySelector('.active').classList.remove('active');
-        sliderImages.querySelector('.n' + num).classList.add('active');
-        sliderDots.querySelector('.active').classList.remove('active');
-        sliderDots.querySelector('.n' + num).classList.add('active');
-    }
+        let active = document.querySelector(blockClass + activeClass);
+        if (active != item) {
+            sliderProject(index);
+        }
+    }));
 }
 
+function sliderProject(index) {
+    let active = document.querySelector('.projects-content.active');
+    let activeItem = document.querySelector('.projects-item.active-window');
+    let activeDot = document.querySelector('.projects-pagination__circle.active-dot');
+    active.classList.remove('active');
+    project[index].classList.add('active');
+    activeItem.classList.remove('active-window');
+    projectItem[index].classList.add('active-window');
+    activeDot.classList.remove('active-dot');
+    projectDot[index].classList.add('active-dot');
+}
 
-document.addEventListener('DOMContentLoaded', initSlider);
+leftArrow.addEventListener('click', () => {
+    let activeDot = document.querySelector('.projects-pagination__circle.active-dot');
+    projectDot.forEach(function (item, index) {
+        if (item == activeDot) {
+            if (index == 0) {
+                index = projectDot.length;
+            }
+            sliderProject(index - 1);
+        }
+    })
+})
+
+rightArrow.addEventListener('click', () => {
+    let activeDot = document.querySelector('.projects-pagination__circle.active-dot');
+    projectDot.forEach(function (item, index) {
+        if (item == activeDot) {
+            if (index == projectDot.length - 1) {
+                index = -1;
+            }
+            sliderProject(index + 1);
+        }
+    })
+})
